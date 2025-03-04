@@ -1,20 +1,19 @@
 name: Build
-
 on:
-	push:
-		branches:
-			- main
-   
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
 jobs:
-	build:
-		name: Build and analyze
-		runs-on: windows-latest
-
-		steps:
-			- users: actions/checkout@v4
-				with:
-					fetch-depth: 0
-			- users: SonarSource/sonarqube-scan-action@v4
-				env:
-					SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-					SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+  sonarqube:
+    name: SonarQube
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
